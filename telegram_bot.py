@@ -4,6 +4,7 @@ from openai import OpenAI
 from dotenv import load_dotenv
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
+from analyst_team import AnalystTeam
 
 load_dotenv()
 
@@ -45,7 +46,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "안녕하세요! AI 투자 분석 봇입니다.\n\n"
         "사용법:\n"
-        "/analyze AAPL - 애플 분석\n"
+        "/analyze AAPL - 애플 간단 분석\n"
+        "/team AAPL - 전문가팀 종합 분석\n"
         "/portfolio - 5개 종목 포트폴리오"
     )
 
@@ -87,12 +89,54 @@ async def portfolio(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message = "📊 주요 종목 현황:\n\n" + "\n".join(stocks_info)
     await update.message.reply_text(message)
 
+async def team_analyze(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not context.args:
+        await update.message.reply_text("종목 코드를 입력하세요. 예: /team AAPL")
+        return
+    
+    symbol = context.args[0].upper()
+    await update.message.reply_text(f"🔍 {symbol} 전문가팀 분석 중... (30초 소요)")
+    
+    try:
+        team = AnalystTeam()
+        result = team.analyze_stock(symbol)
+        
+        # 메시지 구성
+        message = f"""
+📊 **{result['company']} ({result['symbol']})**
+💰 현재가: ${result['price']}
+🕐 분석: {result['timestamp']}
+
+{'='*50}
+**애널리스트 보고**
+{'='*50}
+"""
+        
+        # 각 애널리스트 보고 추가
+        for report in result['analyst_reports'].values():
+            message += f"\n\n**{report['analyst']}**\n{report['analysis'][:500]}..."
+        
+        message += f"\n\n{'='*50}\n**CIO 최종 결정**\n{'='*50}\n"
+        message += result['cio_decision'][:800] + "..."
+        
+        # 텔레그램 메시지 길이 제한 (4096자)
+        if len(message) > 4000:
+            # 두 메시지로 분할
+            await update.message.reply_text(message[:4000])
+            await update.message.reply_text(message[4000:])
+        else:
+            await update.message.reply_text(message, parse_mode='Markdown')
+        
+    except Exception as e:
+        await update.message.reply_text(f"오류: {str(e)}")
+
 def main():
     app = Application.builder().token(bot_token).build()
     
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("analyze", analyze))
     app.add_handler(CommandHandler("portfolio", portfolio))
+    app.add_handler(CommandHandler("team", team_analyze))
     
     print("봇 시작됨! Ctrl+C로 종료")
     app.run_polling(allowed_updates=Update.ALL_TYPES)
