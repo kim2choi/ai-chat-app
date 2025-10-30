@@ -10,7 +10,7 @@ load_dotenv()
 # API 설정
 fmp_key = os.getenv("FMP_API_KEY")
 openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
+bot_token = os.getenv("STOCK_BOT_TOKEN")
 
 def get_stock_data(symbol):
     url = f"https://financialmodelingprep.com/api/v3/quote/{symbol}?apikey={fmp_key}"
