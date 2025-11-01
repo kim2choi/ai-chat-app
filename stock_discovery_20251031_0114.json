@@ -1,0 +1,141 @@
+{
+  "timestamp": "2025-10-31 01:14:25",
+  "strategies": {
+    "hidden_gems": {
+      "config": {
+        "name": "Hidden Gems (숨은 보석)",
+        "universes": [
+          "small_cap",
+          "mid_cap"
+        ],
+        "description": "저평가 고성장 중소형주"
+      },
+      "picks": [
+        {
+          "symbol": "LOMA",
+          "name": "Loma Negra Compañía Industrial Argentina Sociedad Anónima",
+          "price": 10.07,
+          "market_cap": 1175134762,
+          "pe": 33.57,
+          "peg": 999,
+          "revenue_growth": 65.61911286996586,
+          "score": 65,
+          "is_gem": true,
+          "reasons": [
+            "매출 성장 65.6%",
+            "소형주"
+          ],
+          "category": "Hidden Gem"
+        },
+        {
+          "symbol": "AUPH",
+          "name": "Aurinia Pharmaceuticals Inc.",
+          "price": 12.205,
+          "market_cap": 1606538609,
+          "pe": 28.38,
+          "peg": 999,
+          "revenue_growth": 33.96899374975073,
+          "score": 65,
+          "is_gem": true,
+          "reasons": [
+            "매출 성장 34.0%",
+            "소형주"
+          ],
+          "category": "Hidden Gem"
+        },
+        {
+          "symbol": "BSAC",
+          "name": "Banco Santander-Chile",
+          "price": 28.33,
+          "market_cap": 13346696931,
+          "pe": 11.76,
+          "peg": 999,
+          "revenue_growth": 232.0156039241391,
+          "score": 65,
+          "is_gem": true,
+          "reasons": [
+            "매출 성장 232.0%",
+            "중소형주",
+            "PE 11.8"
+          ],
+          "category": "Hidden Gem"
+        }
+      ]
+    },
+    "deep_value": {
+      "config": {
+        "name": "Deep Value (가치주)",
+        "universes": [
+          "large_cap",
+          "mid_cap",
+          "small_cap"
+        ],
+        "description": "극단적 저평가 전 시총"
+      },
+      "picks": []
+    },
+    "quality_growth": {
+      "config": {
+        "name": "Quality Growth (퀄리티 성장)",
+        "universes": [
+          "large_cap",
+          "mid_cap"
+        ],
+        "description": "안정적 고수익 대중형주"
+      },
+      "picks": []
+    },
+    "momentum": {
+      "config": {
+        "name": "Momentum (모멘텀)",
+        "universes": [
+          "large_cap",
+          "mid_cap"
+        ],
+        "description": "강력한 상승세 전 시총"
+      },
+      "picks": [
+        {
+          "symbol": "LHX",
+          "name": "L3Harris Technologies, Inc.",
+          "price": 303.88,
+          "change": 5.92952,
+          "high_proximity": 98.62391276126185,
+          "score": 85,
+          "has_momentum": true,
+          "reasons": [
+            "52주 신고가 근접"
+          ],
+          "category": "Momentum"
+        },
+        {
+          "symbol": "ROL",
+          "name": "Rollins, Inc.",
+          "price": 57.16,
+          "change": 6.1073,
+          "high_proximity": 96.68470906630581,
+          "score": 80,
+          "has_momentum": true,
+          "reasons": [
+            "52주 신고가 근접"
+          ],
+          "category": "Momentum"
+        },
+        {
+          "symbol": "COR",
+          "name": "Cencora, Inc.",
+          "price": 341.135,
+          "change": 2.39067,
+          "high_proximity": 97.46714285714285,
+          "score": 75,
+          "has_momentum": true,
+          "reasons": [
+            "52주 신고가 근접"
+          ],
+          "category": "Momentum"
+        }
+      ]
+    }
+  },
+  "cio_report": "### 1. Executive Summary (핵심 요약)\n\n- **시장 환경:** 현재 글로벌 시장은 금리 변동성과 인플레이션 압박 속에서 회복세를 보이고 있으며, 투자자들은 안정성과 성장성을 동시에 찾는 데 집중하고 있습니다.\n- **핵심 기회:** 중소형 가치 성장주와 모멘텀 전략을 통해 시장에 기회를 포착할 수 있습니다. \n\n### 2. 전략별 평가\n\n- **Hidden Gems (숨은 보석):** \n  - **강점:** 소형주와 중소형주에서 높은 매출 성장률을 보이며 저평가된 종목 발굴.\n  - **적합성:** 변동성 있는 시장에서 성장 가능성과 저평가 요소로 매력적인 기회 제공.\n\n- **Deep Value (가치주):**\n  - **강점:** 현재 발굴된 종목이 없지만 전통적으로 안정성을 줄 수 있는 섹터.\n  - **적합성:** 현재 시장 환경에서는 상대적으로 가치주보다 성장성이 중요한 시점.\n\n- **Quality Growth (퀄리티 성장):**\n  - **강점:** 장기적 지속 가능성과 수익 성장 보장.\n  - **적합성:** 발굴된 종목이 없어 불확실성 존재.\n\n- **Momentum (모멘텀):**\n  - **강점:** 최근 강한 주가 상승을 통해 투자자의 확신을 제공.\n  - **적합성:** 상승 추세에 있는 종목으로 단기 수익 기회 제공.\n\n### 3. Top 5 Conviction Picks\n\n1. **LHX - L3Harris Technologies, Inc.**\n   - **카테고리:** Momentum\n   - **선정 이유:** 52주 신고가 근접, 강력한 모멘텀.\n   - **목표 수익률:** 12%\n\n2. **BSAC - Banco Santander-Chile**\n   - **카테고리:** Hidden Gems\n   - **선정 이유:** 인상적인 매출 성장률 232%와 합리적인 PE\n   - **목표 수익률:** 15%\n\n3. **ROL - Rollins, Inc.**\n   - **카테고리:** Momentum\n   - **선정 이유:** 지속적인 신고가 근접, 확실한 상승세.\n   - **목표 수익률:** 10%\n\n4. **LOMA - Loma Negra Compañía Industrial Argentina Sociedad Anónima**\n   - **카테고리:** Hidden Gems\n   - **선정 이유:** 강력한 매출 성장과 소형주 특유의 높은 변동성 기회.\n   - **목표 수익률:** 18%\n\n5. **COR - Cencora, Inc.**\n   - **카테고리:** Momentum\n   - **선정 이유:** 강한 상승세 및 긍정적 시장 감정.\n   - **목표 수익률:** 11%\n\n### 4. 포트폴리오 구성 제안\n\n- **Hidden Gems:** 40%\n- **Momentum:** 60%\n\n**리스크 관리 방안:**\n- 각 종목 최대 투자 비중 15% 제한\n- 포트폴리오 내 변동성 모니터링 및 리밸런싱 주기적 실행\n\n### 5. 실행 계획\n\n- **1주차 액션:**\n  - 종목별 투자 비율 결정 및 매수 실행\n  - 시장 및 종목별 실적 보고서 검토\n  - 저항 및 지지선 분석을 통한 매수가 및 목표가 설정\n\n- **모니터링 포인트:**\n  - 시장 금리 변동 및 글로벌 경제 지표\n  - 종목별 실적 발표 및 중요 뉴스 이벤트\n  - 모멘텀 종목의 기술적 분석을 통한 추세 지속성 확인\n\n이 전략은 현재 경제 환경과 시장 트렌드를 반영하여 중소형 성장주와 모멘텀 종목에 집중하여 수익성을 극대화할 수 있게 설계되었습니다."
+}

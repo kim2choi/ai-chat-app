@@ -1,0 +1,26 @@
+[
+  {
+    "symbol": "AAPL",
+    "name": "Apple Inc.",
+    "price": 269.7,
+    "change_percent": 0.26022
+  },
+  {
+    "symbol": "TSLA",
+    "name": "Tesla, Inc.",
+    "price": 461.51,
+    "change_percent": 0.20845
+  },
+  {
+    "symbol": "MSFT",
+    "name": "Microsoft Corporation",
+    "price": 541.55,
+    "change_percent": -0.09592857
+  },
+  {
+    "symbol": "NVDA",
+    "name": "NVIDIA Corporation",
+    "price": 207.04,
+    "change_percent": 2.9896
+  }
+]

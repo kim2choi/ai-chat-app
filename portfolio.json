@@ -1,0 +1,19 @@
+{
+  "cash": 0,
+  "holdings": {
+    "LOMA": {
+      "shares": 1.0,
+      "avg_price": 10.12,
+      "total_cost": 10.12,
+      "first_purchase": "2025-11-02T00:04:54.894175"
+    },
+    "ROL": {
+      "shares": 1.0,
+      "avg_price": 57.25,
+      "total_cost": 57.25,
+      "first_purchase": "2025-11-02T00:04:54.894182"
+    }
+  },
+  "transactions": [],
+  "created_at": "2025-11-01T23:16:04.167283"
+}
