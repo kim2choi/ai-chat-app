@@ -321,31 +321,17 @@ async def confirm_all_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """도움말"""
     message = """
-🏦 **AI Investment Committee**
+🏦 AI Investment Committee
 
-📊 **/portfolio**
-현재 포트폴리오 조회
-
-🔄 **/sync**
-한투 계좌 실시간 동기화
-
-🏛️  **/rebalance**
-투자위원회 소집 (15-20분)
-- 5개 AI 팀 분석
-- CIO 최종 결정
-
-✅ **/approve**
-CIO 결정 승인
-- 주문 목록 생성
-- 가격 확인
-
-🚀 **/confirm_all**
-모든 주문 일괄 실행
-
-💡 **/help**
-도움말
+명령어:
+/portfolio - 포트폴리오 조회
+/sync - 계좌 동기화
+/rebalance - 투자위원회 소집
+/approve - CIO 결정 승인
+/confirm_all - 주문 실행
+/help - 도움말
 """
-    await update.message.reply_text(message, parse_mode='Markdown')
+    await update.message.reply_text(message)  # parse_mode 제거!
 
 
 def main():
