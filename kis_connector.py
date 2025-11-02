@@ -1,6 +1,7 @@
 import os
 import requests
 import json
+import time
 from datetime import datetime
 from typing import Dict, List, Optional
 from dotenv import load_dotenv
@@ -19,11 +20,19 @@ class KISConnector:
         # 실전/모의 구분
         self.base_url = "https://openapi.koreainvestment.com:9443"
         
+        # 토큰 캐시
+        self._token = None
+        self._token_expires = 0
+        
         if not all([self.app_key, self.app_secret, self.account_no]):
             raise ValueError("KIS API 키가 .env에 없습니다!")
     
     def _get_access_token(self) -> str:
-        """접근 토큰 발급"""
+        """접근 토큰 발급 (캐싱)"""
+        
+        # 캐시된 토큰이 유효하면 재사용
+        if self._token and time.time() < self._token_expires:
+            return self._token
         
         url = f"{self.base_url}/oauth2/tokenP"
         
@@ -37,7 +46,10 @@ class KISConnector:
         result = response.json()
         
         if 'access_token' in result:
-            return result['access_token']
+            self._token = result['access_token']
+            # 토큰 유효시간: 24시간 - 안전하게 23시간
+            self._token_expires = time.time() + (23 * 60 * 60)
+            return self._token
         else:
             raise Exception(f"토큰 발급 실패: {result}")
     
