@@ -1,5 +1,6 @@
 import os
 import logging
+from order_executor import OrderExecutor
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
 from dotenv import load_dotenv
@@ -20,6 +21,7 @@ pm = PortfolioManager()
 kis = KISConnector()
 screener = ProfessionalStockScreener()
 committee = InvestmentCommittee(pm, screener)
+executor = OrderExecutor()
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """시작 메시지"""
@@ -86,6 +88,92 @@ async def sync_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         await update.message.reply_text(f"❌ 오류: {e}")
 
+async def execute_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """투자위원회 결정 실행"""
+    
+    # 사용법 체크
+    if not context.args or len(context.args) < 3:
+        await update.message.reply_text(
+            "❌ 사용법:\n"
+            "/execute BUY AAPL 10\n"
+            "/execute SELL TSLA 5"
+        )
+        return
+    
+    try:
+        order_type = context.args[0].upper()
+        symbol = context.args[1].upper()
+        quantity = int(context.args[2])
+        
+        # 확인 메시지
+        await update.message.reply_text(
+            f"⚠️  **주문 확인**\n\n"
+            f"종목: {symbol}\n"
+            f"수량: {quantity}주\n"
+            f"주문: {order_type}\n\n"
+            f"실행하시려면 다시 입력:\n"
+            f"`/confirm {order_type} {symbol} {quantity}`",
+            parse_mode='Markdown'
+        )
+        
+    except Exception as e:
+        await update.message.reply_text(f"❌ 오류: {e}")
+
+async def confirm_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """주문 최종 확인 및 실행"""
+    
+    if not context.args or len(context.args) < 3:
+        await update.message.reply_text("❌ 올바르지 않은 명령어입니다.")
+        return
+    
+    await update.message.reply_text("🔄 주문 실행 중...")
+    
+    try:
+        order_type = context.args[0].upper()
+        symbol = context.args[1].upper()
+        quantity = int(context.args[2])
+        
+        # 주문 실행
+        if order_type == "BUY":
+            result = executor.execute_buy(symbol, quantity)
+        elif order_type == "SELL":
+            result = executor.execute_sell(symbol, quantity)
+        else:
+            await update.message.reply_text("❌ 주문 유형은 BUY 또는 SELL만 가능합니다.")
+            return
+        
+        # 결과 전송
+        if result['success']:
+            msg = f"""
+✅ **주문 체결 완료!**
+
+종목: {symbol}
+수량: {quantity}주
+주문: {order_type}
+가격: ${result.get('executed_price', 0):.2f}
+총액: ${result.get('executed_price', 0) * quantity:.2f}
+
+주문번호: {result.get('order_no', 'N/A')}
+"""
+        else:
+            msg = f"""
+❌ **주문 실패**
+
+에러: {result.get('error', 'Unknown')}
+코드: {result.get('code', 'N/A')}
+"""
+        
+        await update.message.reply_text(msg, parse_mode='Markdown')
+        
+        # 동기화
+        await update.message.reply_text("🔄 포트폴리오 동기화 중...")
+        kis.sync_to_portfolio_manager(pm)
+        await update.message.reply_text("✅ 동기화 완료!")
+        
+    except Exception as e:
+        await update.message.reply_text(f"❌ 오류: {e}")
+        logging.error(f"Execute error: {e}", exc_info=True)
+
 async def rebalance_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """투자위원회 리밸런싱"""
     await update.message.reply_text(
@@ -137,6 +225,9 @@ async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
 - Fundamental Analysis Team
 - CIO 최종 결정
 
+💰 **/execute BUY AAPL 10**
+주문 실행 (2단계 확인)
+
 💡 **/help**
 도움말
 """
@@ -157,6 +248,8 @@ def main():
     application.add_handler(CommandHandler("portfolio", portfolio_cmd))
     application.add_handler(CommandHandler("sync", sync_cmd))
     application.add_handler(CommandHandler("rebalance", rebalance_cmd))
+    application.add_handler(CommandHandler("execute", execute_cmd))  # ← 추가!
+    application.add_handler(CommandHandler("confirm", confirm_cmd))  # ← 추가!
     application.add_handler(CommandHandler("help", help_cmd))
     
     print("🤖 텔레그램 투자위원회 봇 시작...")
