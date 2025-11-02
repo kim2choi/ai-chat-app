@@ -68,7 +68,8 @@ async def sync_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     try:
         portfolio = kis.sync_to_portfolio_manager(pm)
-        
+        pm.save()
+
         msg = f"""
 ✅ **동기화 완료**
 
