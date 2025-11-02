@@ -76,8 +76,16 @@ class OrderExecutor:
         
         try:
             # 1. 현재 가격 조회
-            # (한투 API로 실시간 가격 조회하는 코드 - 일단 간단히)
-            price = 100.0  # TODO: 실제 가격 조회 구현
+            print(f"📊 {symbol} 현재 가격 조회 중...")
+            price = self.kis.get_current_price(symbol)
+
+            if not price:
+                return {
+                    'success': False,
+                    'error': f'{symbol} 가격 조회 실패'
+                }
+
+            print(f"   현재가: ${price:.2f}")
             
             # 2. 검증
             validation = self.validate_order(symbol, quantity, price, "BUY")
@@ -135,7 +143,16 @@ class OrderExecutor:
         
         try:
             # 1. 현재 가격 조회
-            price = 100.0  # TODO: 실제 가격 조회
+            print(f"📊 {symbol} 현재 가격 조회 중...")
+            price = self.kis.get_current_price(symbol)
+
+            if not price:
+                return {
+                    'success': False,
+                    'error': f'{symbol} 가격 조회 실패'
+                }
+
+            print(f"   현재가: ${price:.2f}")
             
             # 2. 검증
             validation = self.validate_order(symbol, quantity, price, "SELL")
