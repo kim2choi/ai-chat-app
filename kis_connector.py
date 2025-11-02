@@ -158,7 +158,7 @@ class KISConnector:
                 'first_purchase': datetime.now().isoformat()
             }
         
-        pm._save_portfolio()
+        pm.save()
         return real_portfolio
 
 
