@@ -41,8 +41,8 @@ class KISConnector:
         else:
             raise Exception(f"토큰 발급 실패: {result}")
     
-    def get_overseas_balance(self) -> Dict:
-        """해외 주식 잔고 조회"""
+    def get_overseas_balance(self, exchange: str = "NASD") -> Dict:
+        """해외 주식 잔고 조회 (현금 포함)"""
         
         token = self._get_access_token()
         
@@ -53,35 +53,54 @@ class KISConnector:
             "authorization": f"Bearer {token}",
             "appkey": self.app_key,
             "appsecret": self.app_secret,
-            "tr_id": "TTTS3012R",  # 해외주식 잔고
+            "tr_id": "TTTS3012R",
             "custtype": "P"
         }
         
         params = {
             "CANO": self.account_no,
             "ACNT_PRDT_CD": self.account_code,
-            "OVRS_EXCG_CD": "NASD",  # 나스닥
+            "OVRS_EXCG_CD": exchange,
             "TR_CRCY_CD": "USD",
             "CTX_AREA_FK200": "",
             "CTX_AREA_NK200": ""
         }
         
         response = requests.get(url, headers=headers, params=params)
-        return response.json()
+        result = response.json()
+        
+        # 현금 잔고 추출
+        cash = 0
+        if result['rt_cd'] == '0' and 'output2' in result:
+            # output2에 계좌 요약 정보
+            if len(result['output2']) > 0:
+                cash = float(result['output2'][0].get('frcr_dncl_amt_2', 0))  # 외화 예수금
+        
+        return {
+            'result': result,
+            'cash': cash
+        }
     
     def parse_portfolio(self) -> Dict:
-        """포트폴리오 파싱 (여러 거래소 통합)"""
+        """포트폴리오 파싱 (여러 거래소 통합 + 현금)"""
         
         print("📊 거래소별 조회 중...")
         
         exchanges = ["NASD", "NYSE", "AMEX"]
         all_holdings = {}
+        total_cash = 0
         
         for exchange in exchanges:
             print(f"   - {exchange}... ")
             
             try:
-                data = self._get_balance_by_exchange(exchange)
+                balance_data = self.get_overseas_balance(exchange)
+                data = balance_data['result']
+                
+                # 현금 (첫 거래소에서만)
+                if exchange == "NASD" and balance_data['cash'] > 0:
+                    total_cash = balance_data['cash']
+                    print(f"      💵 현금: ${total_cash:,.2f}")
                 
                 if data['rt_cd'] == '0' and 'output1' in data:
                     holdings = data['output1']
@@ -114,52 +133,28 @@ class KISConnector:
             except Exception as e:
                 print(f"      ⚠️  조회 실패: {e}")
         
-        print(f"✅ 총 {len(all_holdings)*len(exchanges)}개 포지션 발견\n")
-        print(f"중복 제거 후: {len(all_holdings)}개 고유 종목\n")
+        print(f"✅ 총 {len(all_holdings)}개 고유 종목\n")
+        print(f"💵 현금: ${total_cash:,.2f}\n")
         
-        total_value = sum(h['current_value'] for h in all_holdings.values())
+        total_value = sum(h['current_value'] for h in all_holdings.values()) + total_cash
         
         return {
             'holdings': all_holdings,
+            'cash': total_cash,
             'total_value': total_value,
             'timestamp': datetime.now().isoformat()
         }
     
-    def _get_balance_by_exchange(self, exchange: str) -> Dict:
-        """거래소별 잔고 조회"""
-        
-        token = self._get_access_token()
-        
-        url = f"{self.base_url}/uapi/overseas-stock/v1/trading/inquire-balance"
-        
-        headers = {
-            "Content-Type": "application/json",
-            "authorization": f"Bearer {token}",
-            "appkey": self.app_key,
-            "appsecret": self.app_secret,
-            "tr_id": "TTTS3012R",
-            "custtype": "P"
-        }
-        
-        params = {
-            "CANO": self.account_no,
-            "ACNT_PRDT_CD": self.account_code,
-            "OVRS_EXCG_CD": exchange,
-            "TR_CRCY_CD": "USD",
-            "CTX_AREA_FK200": "",
-            "CTX_AREA_NK200": ""
-        }
-        
-        response = requests.get(url, headers=headers, params=params)
-        return response.json()
-    
     def sync_to_portfolio_manager(self, pm) -> Dict:
-        """PortfolioManager와 동기화"""
+        """PortfolioManager와 동기화 (현금 포함)"""
         
         portfolio = self.parse_portfolio()
         
         # 기존 보유 종목 초기화
         pm.clear_holdings()
+        
+        # 현금 설정
+        pm.set_cash(portfolio['cash'])
         
         # 새로운 보유 종목 설정
         for symbol, data in portfolio['holdings'].items():
@@ -297,8 +292,11 @@ if __name__ == "__main__":
     # 포트폴리오 조회
     portfolio = kis.parse_portfolio()
     
+    print("\n💵 현금:")
+    print(f"${portfolio['cash']:,.2f}")
+    
     print("\n보유 종목:")
     for symbol, data in portfolio['holdings'].items():
         print(f"{symbol}: {data['shares']}주 (${data['current_value']:.2f})")
     
-    print(f"\n총 평가액: ${portfolio['total_value']:.2f}")
+    print(f"\n📊 총 평가액: ${portfolio['total_value']:,.2f}")
