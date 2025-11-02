@@ -83,10 +83,15 @@ class KISConnector:
         
         # 현금 잔고 추출
         cash = 0
-        if result['rt_cd'] == '0' and 'output2' in result:
-            # output2에 계좌 요약 정보
-            if len(result['output2']) > 0:
-                cash = float(result['output2'][0].get('frcr_dncl_amt_2', 0))  # 외화 예수금
+        if result.get('rt_cd') == '0' and 'output2' in result:
+            output2 = result['output2']
+            
+            # output2가 list인 경우
+            if isinstance(output2, list) and len(output2) > 0:
+                cash = float(output2[0].get('frcr_dncl_amt_2', 0))
+            # output2가 dict인 경우
+            elif isinstance(output2, dict):
+                cash = float(output2.get('frcr_dncl_amt_2', 0))
         
         return {
             'result': result,
@@ -114,7 +119,7 @@ class KISConnector:
                     total_cash = balance_data['cash']
                     print(f"      💵 현금: ${total_cash:,.2f}")
                 
-                if data['rt_cd'] == '0' and 'output1' in data:
+                if data.get('rt_cd') == '0' and 'output1' in data:
                     holdings = data['output1']
                     
                     print(f"      === {exchange} 상세 ===")
@@ -140,12 +145,14 @@ class KISConnector:
                             all_holdings[symbol]['avg_price'] = float(item['pchs_avg_pric'])
                             all_holdings[symbol]['current_value'] += float(item['ovrs_stck_evlu_amt'])
                     
-                    print(f"\n{len([h for h in holdings if float(h['ovrs_cblc_qty']) > 0])}개 포지션")
+                    holding_count = len([h for h in holdings if float(h['ovrs_cblc_qty']) > 0])
+                    if holding_count > 0:
+                        print(f"      {holding_count}개 포지션")
                 
             except Exception as e:
                 print(f"      ⚠️  조회 실패: {e}")
         
-        print(f"✅ 총 {len(all_holdings)}개 고유 종목\n")
+        print(f"\n✅ 총 {len(all_holdings)}개 고유 종목")
         print(f"💵 현금: ${total_cash:,.2f}\n")
         
         total_value = sum(h['current_value'] for h in all_holdings.values()) + total_cash
