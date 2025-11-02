@@ -128,24 +128,23 @@ class KISConnector:
                         symbol = item['ovrs_pdno']
                         name = item['ovrs_item_name']
                         shares = float(item['ovrs_cblc_qty'])
+                        item_exchange = item['ovrs_excg_cd']  # 종목의 실제 거래소
                         
-                        if shares > 0:
+                        # 중복 방지: 해당 거래소 종목만 처리
+                        if shares > 0 and item_exchange == exchange:
                             print(f"      {symbol}: {shares}주 ({name})")
                             
+                            # 이미 있으면 스킵 (중복 방지)
                             if symbol not in all_holdings:
                                 all_holdings[symbol] = {
                                     'symbol': symbol,
                                     'name': name,
-                                    'shares': 0,
-                                    'avg_price': 0,
-                                    'current_value': 0
+                                    'shares': shares,
+                                    'avg_price': float(item['pchs_avg_pric']),
+                                    'current_value': float(item['ovrs_stck_evlu_amt'])
                                 }
-                            
-                            all_holdings[symbol]['shares'] += shares
-                            all_holdings[symbol]['avg_price'] = float(item['pchs_avg_pric'])
-                            all_holdings[symbol]['current_value'] += float(item['ovrs_stck_evlu_amt'])
                     
-                    holding_count = len([h for h in holdings if float(h['ovrs_cblc_qty']) > 0])
+                    holding_count = len([h for h in holdings if float(h['ovrs_cblc_qty']) > 0 and h['ovrs_excg_cd'] == exchange])
                     if holding_count > 0:
                         print(f"      {holding_count}개 포지션")
                 
