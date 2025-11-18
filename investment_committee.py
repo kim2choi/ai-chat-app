@@ -160,12 +160,13 @@ class InvestmentCommittee:
         
         # 종목 스크리닝
         print("\n   🔍 종목 스크리닝 실행 중...")
-        candidates = self.screener.screen_stocks(max_results=4)
+        candidates = self.screener.scan_all_strategies(stocks_per_strategy=1)
         
         recommended = []
-        for stock in candidates:
-            recommended.append(stock['symbol'])
-            print(f"      - {stock['symbol']} 완료")
+        if candidates and 'recommendations' in candidates:
+            for stock in candidates['recommendations']:
+                recommended.append(stock['symbol'])
+                print(f"      - {stock['symbol']} 완료")
         
         print(f"\n✅ {len(recommended)} 종목 선정 완료")
         
@@ -191,7 +192,7 @@ class InvestmentCommittee:
         prompt = f"""
 당신은 펀더멘털 분석 전문가입니다.
 
-신규 추천 종목: {', '.join(recommended_stocks)}
+신규 추천 종목: {', '.join(recommended_stocks) if recommended_stocks else '없음'}
 
 각 종목에 대해 간략한 투자 의견을 작성하세요:
 - 투자 매력도
@@ -272,7 +273,7 @@ class InvestmentCommittee:
 3. 펀더멘털 팀 ({team_reports['fundamental']['lead']}):
 {team_reports['fundamental']['analysis']}
 
-4. 발굴 종목: {', '.join(recommended)}
+4. 발굴 종목: {', '.join(recommended) if recommended else '없음'}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
